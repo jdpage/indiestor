@@ -110,8 +110,7 @@ class UserReportRecords
 
 	function outputJSON()
 	{
-                echo json_encode(self::findformattedUserRecords(),
-                                JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)."\n";
+                echo json_encode_legacy(self::findformattedUserRecords())."\n";
         }
 }
 

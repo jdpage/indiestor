@@ -73,7 +73,7 @@ class Volumes extends EntityType
 
         static function showJSON()
         {
-                echo json_encode(self::findFileSystems(),JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)."\n";
+                echo json_encode_legacy(self::findFileSystems())."\n";
         }
 
 	static function purgeFstabBackups($commandAction)

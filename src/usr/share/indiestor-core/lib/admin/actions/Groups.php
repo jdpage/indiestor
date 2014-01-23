@@ -41,7 +41,7 @@ class Groups extends EntityType
 
         static function showJSON($groups)
         {
-                echo json_encode($groups,JSON_PRETTY_PRINT)."\n";
+                echo json_encode_legacy($groups)."\n";
         }
 
         static function json($commandAction)

@@ -20,6 +20,7 @@ requireLibFile('admin/action-engine/DeviceQuota.php');
 requireLibFile('admin/action-engine/Incrontab.php');
 requireLibFile('admin/action-engine/InotifyWatchFolders.php');
 requireLibFile('admin/action-engine/InotifyWait.php');
+requireLibFile('admin/action-engine/json_encode_legacy.php');
 
 class ActionEngine
 {
