@@ -11,6 +11,12 @@
 class Volumes extends EntityType
 {
 
+        static function json($commandAction)
+        {
+                //handled by show command
+                return;
+        }
+
 	static function noVolumes()
 	{
 		echo "no volumes\n";
@@ -18,43 +24,43 @@ class Volumes extends EntityType
 
         static function show($commandAction)
         {
-		$format1="%-50s %-10s %-5s %7s %7s %10s %5s  %-s\n";
-		printf($format1,'device (in GB)','type','quota','total','used','avail','%used','mounted on');
-		$dfFileSystems=sysquery_df();
-		$zpools=sysquery_zpool_list();
-		if(count($dfFileSystems>0))
-		{
-			$hasOutput=false;
-			foreach($dfFileSystems as $dfFileSystem)
-			{
-				//for zfs only show pools, not user-level quota
-				if($dfFileSystem->type=='zfs')
-				{
-					if(array_key_exists($dfFileSystem->device,$zpools))
-					{
-						$hasOutput=true;
-						self::showLine($dfFileSystem);
-					}
-				}
-				else
-				{
-					$hasOutput=true;
-					self::showLine($dfFileSystem);
-				}
-			}
-
-			if(!$hasOutput)
-				self::noVolumes();
-		}
-		else
-		{
-			self::noVolumes();
-		}
+                if(ProgramActions::actionExists('json'))
+                        self::showJSON();
+                else
+                        self::showCLI();
         }
 
-	static function showLine($dfFileSystem)
+        static function findFileSystems()
+        {
+                $fileSystems=array();
+		$dfFileSystems=sysquery_df();
+		$zpools=sysquery_zpool_list();
+		foreach($dfFileSystems as $dfFileSystem)
+			//for zfs only show pools, not user-level quota
+			if($dfFileSystem->type=='zfs')
+                        {
+				if(array_key_exists($dfFileSystem->device,$zpools))
+                                        $fileSystems[]=$dfFileSystem;
+                        }
+			else $fileSystems[]=$dfFileSystem;
+                return $fileSystems;
+        }
+
+        static function showCLI()
+        {
+		$format1="%-55s %-10s %-5s %7s %7s %10s %5s  %-s\n";
+		printf($format1,'device (in GB)','type','quota','total','used','avail','%used','mounted on');
+                $fileSystems=self::findFileSystems();
+		if(count($fileSystems>0))
+			foreach($fileSystems as $fileSystem)
+				self::showCLILine($fileSystem);
+		else
+			self::noVolumes();
+        }
+
+	static function showCLILine($dfFileSystem)
 	{
-		$format2="%-50s %-10s %-5s %7d %7d %10d %5d  %-s\n";
+		$format2="%-55s %-10s %-5s %7d %7d %10d %5d  %-s\n";
 		printf($format2,$dfFileSystem->device,
 				$dfFileSystem->type,
 				$dfFileSystem->quotaYN,
@@ -64,6 +70,11 @@ class Volumes extends EntityType
 				$dfFileSystem->percUse,
 				$dfFileSystem->mountedOn);
 	}
+
+        static function showJSON()
+        {
+                echo json_encode(self::findFileSystems(),JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)."\n";
+        }
 
 	static function purgeFstabBackups($commandAction)
 	{

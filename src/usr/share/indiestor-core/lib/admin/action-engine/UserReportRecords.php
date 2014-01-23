@@ -23,77 +23,95 @@ class UserReportRecords
                 }
 	}
 
-	function output()
+        function findFormattedUserRecords()
+        {
+                $formattedUserRecords=array();
+		$sambaUsers=sysquery_pdbedit_list();
+		$sambaConnectedUsers=sysquery_smbstatus_processes();
+		foreach($this->records as $userReportRecord)
+		{
+                        $formattedUserRecord=array();
+
+			//locked
+			if($userReportRecord->locked) $formattedUserRecord['locked']='Y';
+			else $formattedUserRecord['locked']='N';
+
+			//groupName
+			if($userReportRecord->groupName==null) $formattedUserRecord['group']='(none)';
+			else $formattedUserRecord['groupName']=$userReportRecord->groupName;
+
+			//quota
+			if($userReportRecord->hasQuotaRecord)
+			{
+				$formattedUserRecord['quotaTotalGB']=floor($userReportRecord->quotaTotalGB).'G';
+				$formattedUserRecord['quotaUsedGB']=number_format($userReportRecord->quotaUsedGB,1).'G';
+				$formattedUserRecord['quotaUsedPerc']=floor($userReportRecord->quotaUsedPerc).'%';
+			}
+			else
+			{
+				$formattedUserRecord['quotaTotalGB']='-';
+				$formattedUserRecord['quotaUsedGB']='-';
+				$formattedUserRecord['quotaUsedPerc']='-';
+			}
+
+			if(array_key_exists($userReportRecord->userName,$sambaUsers))
+			{                                
+				$sambaUser=$sambaUsers[$userReportRecord->userName];
+				$formattedUserRecord['samba']='Y';
+				$formattedUserRecord['sambaFlags']=implode('',$sambaUser['sambaFlagArray']);
+			}
+			else
+			{
+				$formattedUserRecord['samba']='N';
+				$formattedUserRecord['sambaFlags']='-';
+			}
+
+			if(array_key_exists($userReportRecord->userName,$sambaConnectedUsers))
+				$formattedUserRecord['sambaConnected']='Y';
+			else $formattedUserRecord['sambaConnected']='N';
+
+			$formattedUserRecord['userName']=$userReportRecord->userName;
+			$formattedUserRecord['homeFolder']=$userReportRecord->homeFolder;
+
+                        $formattedUserRecords[]=$formattedUserRecord;
+		}
+
+                return $formattedUserRecords;
+        }
+
+	function outputCLI()
 	{
-		if(count($this->records)==0) 
+                $formattedUserRecords=self::findformattedUserRecords();
+
+		if(count($formattedUserRecords)==0) 
 		{
 			echo "no users\n";
 			return;
 		}
 
-		$sambaUsers=sysquery_pdbedit_list();
-		$sambaConnectedUsers=sysquery_smbstatus_processes();
-
 		$format1="%-10s %-20s %-6s %-10s %5s %5s %5s %-5s %-5s %-5s\n";
 		$format2="%-10s %-20s %-6s %-10s %5s %5s %5s %-5s %-5s %-5s\n";
 		printf($format1,'user','home','locked','group','quota','used','%used','samba','flags','conn.');
-		foreach($this->records as $userReportRecord)
+		foreach($formattedUserRecords as $formattedUserRecord)
 		{
-			//locked
-			if($userReportRecord->locked) $locked='Y';
-			else $locked='N';
-
-			//groupName
-			if($userReportRecord->groupName==null) $groupName='(none)';
-			else $groupName=$userReportRecord->groupName;
-
-			//quota
-			if($userReportRecord->hasQuotaRecord)
-			{
-				$quotaTotalGB=floor($userReportRecord->quotaTotalGB).'G';
-				$quotaUsedGB=number_format($userReportRecord->quotaUsedGB,1).'G';
-				$quotaUsedPerc=floor($userReportRecord->quotaUsedPerc).'%';
-			}
-			else
-			{
-				$quotaTotalGB='-';
-				$quotaUsedGB='-';
-				$quotaUsedPerc='-';
-			}
-
-			if(array_key_exists($userReportRecord->userName,$sambaUsers))
-			{
-				$sambaUser=$sambaUsers[$userReportRecord->userName];
-				$samba='Y';
-				$flags=implode('',$sambaUser['sambaFlagArray']);
-			}
-			else
-			{
-				$samba='N';
-				$flags='-';
-			}
-
-			if(array_key_exists($userReportRecord->userName,$sambaConnectedUsers))
-			{
-				$sambaConnected='Y';
-			}
-			else
-			{
-				$sambaConnected='N';
-			}
-
 			printf($format2,
-				$userReportRecord->userName,
-				$userReportRecord->homeFolder,
-				$locked,
-				$groupName,
-				$quotaTotalGB,
-				$quotaUsedGB,
-				$quotaUsedPerc,
-				$samba,
-				$flags,
-				$sambaConnected);  
+				$formattedUserRecord['userName'],
+				$formattedUserRecord['homeFolder'],
+				$formattedUserRecord['locked'],
+				$formattedUserRecord['groupName'],
+				$formattedUserRecord['quotaTotalGB'],
+				$formattedUserRecord['quotaUsedGB'],
+				$formattedUserRecord['quotaUsedPerc'],
+				$formattedUserRecord['samba'],
+				$formattedUserRecord['sambaFlags'],
+				$formattedUserRecord['sambaConnected']);  
 		}
 	}
+
+	function outputJSON()
+	{
+                echo json_encode(self::findformattedUserRecords(),
+                                JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES)."\n";
+        }
 }
 

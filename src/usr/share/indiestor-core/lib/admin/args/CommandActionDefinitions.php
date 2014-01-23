@@ -134,7 +134,8 @@ class CommandActionDefinitions
 	{
 		foreach($this->mandatoryActions as $mandatoryActionPair)
 		{
-			if($mandatoryActionPair->action1==$action) return $mandatoryActionPair->action2;
+                        if($mandatoryActionPair->entityType==$entityType)
+        			if($mandatoryActionPair->action1==$action) return $mandatoryActionPair->action2;
 		}
 		return null;
 	}

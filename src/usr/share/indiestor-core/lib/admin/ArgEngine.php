@@ -230,6 +230,7 @@ class ArgEngine
 
 		//check for the entity specified
 		$entityType=ProgramActions::$entityType;
+
 	        foreach(ProgramActions::$actions as $commandAction)
 	        {
 	                $action=$commandAction->action;

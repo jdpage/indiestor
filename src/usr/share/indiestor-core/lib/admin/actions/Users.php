@@ -20,6 +20,13 @@ function chownIndienotify($path)
 
 class Users extends EntityType
 {
+
+        static function json($commandAction)
+        {
+                //handled by show command
+                return;
+        }
+
         static function show($commandAction)
         {
                 $etcGroup=EtcGroup::instance();
@@ -30,7 +37,11 @@ class Users extends EntityType
 		if(!property_exists($indiestorGroup,'members')) $indiestorGroup->members=array();
 
 		$userReportRecords=new UserReportRecords($indiestorGroup->members);
-		$userReportRecords->output();
+
+                if(ProgramActions::actionExists('json'))
+        		$userReportRecords->outputJSON();
+                else
+        		$userReportRecords->outputCLI();
        }
 
         static function showIncrontab($commandAction)

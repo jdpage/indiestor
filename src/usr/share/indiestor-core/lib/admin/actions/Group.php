@@ -63,6 +63,12 @@ class Group extends EntityType
 			ActionEngine::error('AE_ERR_GROUP_DOES_NOT_EXISTS',array('group'=>$ISGroupName));
 	}
 
+        static function json($commandAction)
+        {
+                //handled by show command
+                return;
+        }
+
 	static function showMembers($commandAction)
 	{
 		$ISGroupName=ProgramActions::$entityName;
@@ -71,7 +77,10 @@ class Group extends EntityType
 		$group=$etcGroup->findGroup($ISGroupName);
 
 		$userReportRecords=new UserReportRecords($group->members);
-		$userReportRecords->output();
+                if(ProgramActions::actionExists('json'))
+        		$userReportRecords->outputJSON();
+                else
+        		$userReportRecords->outputCLI();
 	}
 
 	static function startWatching($commandAction)

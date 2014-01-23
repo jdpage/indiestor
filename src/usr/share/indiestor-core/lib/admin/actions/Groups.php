@@ -19,17 +19,35 @@ class Groups extends EntityType
         static function show($commandAction)
         {
                 $etcGroup=EtcGroup::instance();
+                if(ProgramActions::actionExists('json'))
+                        self::showJSON($etcGroup->groups);
+                else
+                        self::showCLI($etcGroup->groups);
+        }
 
-		if(count($etcGroup->groups)==0) 
-		{
-			self::noMembers();
-			return;
-		}
+        static function showCLI($groups)
+        {
+	        if(count($groups)==0) 
+	        {
+		        self::noMembers();
+		        return;
+	        }
 
-                foreach($etcGroup->groups as $group)
+                foreach($groups as $group)
                 {
                         echo "$group->name\n";
                 }
+        }
+
+        static function showJSON($groups)
+        {
+                echo json_encode($groups,JSON_PRETTY_PRINT)."\n";
+        }
+
+        static function json($commandAction)
+        {
+                //handled by show command
+                return;
         }
 
 	static function startWatching($commandAction)
@@ -41,6 +59,5 @@ class Groups extends EntityType
 	{
 		InotifyWait::stopWatchingAll();
 	}
-
 }
 
