@@ -37,7 +37,7 @@ class UserReportRecords
 			else $formattedUserRecord['locked']='N';
 
 			//groupName
-			if($userReportRecord->groupName==null) $formattedUserRecord['group']='(none)';
+			if($userReportRecord->groupName==null) $formattedUserRecord['groupName']='(none)';
 			else $formattedUserRecord['groupName']=$userReportRecord->groupName;
 
 			//quota
