@@ -78,13 +78,13 @@ function sysquery_df()
 			if($dfFileSystem->device=='/dev/simfs')
 			{
 				//openvz/virtuozzo unsupported
-				$dfFileSystem->quotaYN='N';
+				$dfFileSystem->quotaYN='no';
 			}
 			else
 			{
 				$quotaEnabled=sysquery_quotaon_p($dfFileSystem->device);
-				if($quotaEnabled===true) $dfFileSystem->quotaYN='Y'; 
-				else if($quotaEnabled===false) $dfFileSystem->quotaYN='N';
+				if($quotaEnabled===true) $dfFileSystem->quotaYN='yes'; 
+				else if($quotaEnabled===false) $dfFileSystem->quotaYN='no';
 				else $dfFileSystem->quotaYN='?'; 
 			}
 

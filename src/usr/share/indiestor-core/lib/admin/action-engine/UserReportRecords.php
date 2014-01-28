@@ -33,8 +33,8 @@ class UserReportRecords
                         $formattedUserRecord=array();
 
 			//locked
-			if($userReportRecord->locked) $formattedUserRecord['locked']='Y';
-			else $formattedUserRecord['locked']='N';
+			if($userReportRecord->locked) $formattedUserRecord['locked']='yes';
+			else $formattedUserRecord['locked']='no';
 
 			//groupName
 			if($userReportRecord->groupName==null) $formattedUserRecord['groupName']='(none)';
@@ -57,18 +57,18 @@ class UserReportRecords
 			if(array_key_exists($userReportRecord->userName,$sambaUsers))
 			{                                
 				$sambaUser=$sambaUsers[$userReportRecord->userName];
-				$formattedUserRecord['samba']='Y';
+				$formattedUserRecord['samba']='yes';
 				$formattedUserRecord['sambaFlags']=implode('',$sambaUser['sambaFlagArray']);
 			}
 			else
 			{
-				$formattedUserRecord['samba']='N';
+				$formattedUserRecord['samba']='no';
 				$formattedUserRecord['sambaFlags']='-';
 			}
 
 			if(array_key_exists($userReportRecord->userName,$sambaConnectedUsers))
-				$formattedUserRecord['sambaConnected']='Y';
-			else $formattedUserRecord['sambaConnected']='N';
+				$formattedUserRecord['sambaConnected']='yes';
+			else $formattedUserRecord['sambaConnected']='no';
 
 			$formattedUserRecord['userName']=$userReportRecord->userName;
 			$formattedUserRecord['homeFolder']=$userReportRecord->homeFolder;
