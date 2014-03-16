@@ -47,8 +47,12 @@ class InotifyWait
 	static function stopWatching($groupName)
 	{
 		$pids=self::watchProcesses($groupName);
-		foreach($pids as $pid)
-			posix_kill($pid,SIGTERM);
+		foreach($pids as $pid) {
+			posix_kill($pid,SIGKILL);
+                        $posix_error=posix_get_last_error();
+                        if($posix_error!=0)
+                                echo "posix error: $posix_error\n";
+                }
 	}
 
 	static function startWatching($groupName)
