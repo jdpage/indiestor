@@ -37,7 +37,7 @@ class UserReportRecord
 		if(sysquery_df_filesystem_for_folder($this->homeFolder)=='zfs')
 			$quotaRecord=sysquery_df_quota_for_folder($userName,$this->homeFolder);
 		else
-			$quotaRecord=sysquery_repquota_for_user($this->device,$userName);
+			$quotaRecord=null;
 
 		if($quotaRecord!=null)
 		{

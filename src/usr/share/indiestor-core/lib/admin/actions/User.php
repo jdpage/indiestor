@@ -30,8 +30,8 @@ class User extends EntityType
 		if(ProgramActions::actionExists('set-group')) self::validateSetGroup($userName);
 		if(ProgramActions::actionExists('unset-group')) self::validateUnsetGroup($userName);
 		if(ProgramActions::actionExists('lock')) self::validateLock($userName);
-		if(ProgramActions::actionExists('set-quota')) self::validateSetQuota($userName);
-		if(ProgramActions::actionExists('remove-quota')) self::validateRemoveQuota($userName);
+		if(ProgramActions::actionExists('set-zfs-quota')) self::validateSetZfsQuota($userName);
+		if(ProgramActions::actionExists('remove-zfs-quota')) self::validateRemoveZfsQuota($userName);
 		if(ProgramActions::actionExists('set-passwd')) self::validateSetPasswd($userName);
 		if(ProgramActions::actionExists('add-to-samba')) self::validateAddToSamba($userName);
 		if(ProgramActions::actionExists('remove-from-samba')) self::validateRemoveFromSamba($userName);
@@ -124,57 +124,11 @@ class User extends EntityType
 		else return $user->homeFolder;
 	}	
 
-	static function deviceForUser($userName)
+	static function validateSetZfsQuota($userName)
 	{
-		//find user home folder
-		$homeFolder=self::homeFolderForUser($userName);
-		//find device for user home folder
-		return sysquery_df_device_for_folder($homeFolder);
-	}
-
-	static function checkIfQuotaPackageInstalled()
-	{
-		if(!sysquery_which('setquota'))
-			ActionEngine::error('AE_ERR_USER_QUOTA_PACKAGE_NOT_INSTALLED',array());
-		if(!sysquery_which('quotatool'))
-			ActionEngine::error('AE_ERR_USER_QUOTATOOL_PACKAGE_NOT_INSTALLED',array());
-	}
-
-	static function validateSetQuota($userName)
-	{
-		$commandAction=ProgramActions::findByName('set-quota');
+		$commandAction=ProgramActions::findByName('set-zfs-quota');
 		$GB=$commandAction->actionArg;
 		self::checkForValidQuota($GB);
-
-		$homeFolder=self::homeFolderForUser($userName);
-		$fileSystem=sysquery_df_filesystem_for_folder(dirname($homeFolder));
-		if($fileSystem!='zfs')
-		{
-			//check if quota package is installed
-			self::checkIfQuotaPackageInstalled();
-			//device for user
-			$device=self::deviceForUser($userName);
-			//fail on openVZ
-			ActionEngine::failOnOpenVZ($device);
-			//do not exceed the maximum available for the device
-			self::checkIfQuotaNotOverMaximumAvailable($userName,$homeFolder,$device,$GB);
-			//make sure quota is enabled
-			DeviceQuota::switchOn($device);
-			self::checkQuotaSwitchedOn($device,$homeFolder);
-		}
-	}
-
-	static function checkIfQuotaNotOverMaximumAvailable($userName,$homeFolder,$device,$GB)
-	{
-		$dfFileSystem=sysquery_df_device($device);
-		if($dfFileSystem==null) 
-			ActionEngine::error('SYS_ERR_USER_QUOTA_VOLUME_DOES_NOT_EXIST',
-						array('userName'=>$userName,'homeFolder'=>$homeFolder,'volume'=>$device));
-		$maxGB=$dfFileSystem->storageGB;
-		if($GB>$maxGB)
-			ActionEngine::error('AE_ERR_USER_QUOTA_OVER_MAXSIZE_VOLUME',
-						array('volume'=>$device,'maxGB'=>$maxGB,'quota'=>$GB));
-
 	}
 
 	static function cracklibActive()
@@ -211,24 +165,6 @@ class User extends EntityType
 				ActionEngine::error('AE_ERR_USER_PASSWD_REJECTED_BY_CRACKLIB',
 					array('passwd'=>$passwd,'cracklib-errmsg'=>$cracklibErrMsg));
 			}
-		}
-	}
-
-	static function validateRemoveQuota($userName)
-	{
-		$homeFolder=self::homeFolderForUser($userName);
-		$fileSystem=sysquery_df_filesystem_for_folder(dirname($homeFolder));
-		if($fileSystem!='zfs')
-		{
-			//check if quota package is installed
-			self::checkIfQuotaPackageInstalled();
-			//device for user
-			$device=self::deviceForUser($userName);
-			//make sure it's on
-			ActionEngine::failOnOpenVZ($device);
-			if(sysquery_quotaon_p($device)!==true)
-				ActionEngine::warning('AE_WARN_USER_REMOVE_QUOTA_ON_DEVICE_QUOTA_NOT_ENABLED',
-								array('userName'=>$userName,'volume'=>$device));
 		}
 	}
 
@@ -504,7 +440,7 @@ class User extends EntityType
 		EtcGroup::reset();
 	}
 
-	static function setQuota($commandAction)
+	static function setZfsQuota($commandAction)
 	{
 		$userName=ProgramActions::$entityName;
 		$homeFolder=self::homeFolderForUser($userName);
@@ -517,16 +453,10 @@ class User extends EntityType
 			$homeFolderWithoutLeadingSlash=substr($homeFolder,1);
 			ShellCommand::exec_fail_if_error("zfs set quota={$GB}G $homeFolderWithoutLeadingSlash");
 		}
-		else
-		{
-			//find device for user
-			$device=self::deviceForUser($userName);
-			//set the quota
-			syscommand_quotatool($userName,$device,$GB);
-		}
+                else ActionEngine::error('AE_ERR_USER_QUOTA_ONLY_SUPPORTED_ZFS');
 	}
 
-        static function removeQuota($commandAction)
+        static function removeZfsQuota($commandAction)
         {
                 $userName=ProgramActions::$entityName;
                 $homeFolder=self::homeFolderForUser($userName);
@@ -537,13 +467,7 @@ class User extends EntityType
                         $homeFolderWithoutLeadingSlash=substr($homeFolder,1);
                         ShellCommand::exec_fail_if_error("zfs set quota=none $homeFolderWithoutLeadingSlash");
                 }
-                else
-                {
-                        //find device for user
-    		        $device=self::deviceForUser($userName);
-                        //set the quota to zero; which effectively removes the quota
-                        syscommand_quotatool($userName,$device,0);
-                }
+                else ActionEngine::error('AE_ERR_USER_QUOTA_ONLY_SUPPORTED_ZFS');
         }
 
 	static function show($commandAction)
@@ -562,14 +486,6 @@ class User extends EntityType
 		if(intval($GB)==0)
 			ActionEngine::error('AE_ERR_USER_QUOTA_MAY_NOT_BE_ZERO');
 
-	}
-
-	static function	checkQuotaSwitchedOn($device,$homeFolder)
-	{
-		$userName=ProgramActions::$entityName;
-		if(sysquery_quotaon_p($device)!==true)
-			ActionEngine::error('SYS_ERR_USER_QUOTA_CANNOT_SWITCH_ON_FOR_VOLUME',
-					array('userName'=>$userName,'volume'=>$device,'homeFolder'=>$homeFolder));
 	}
 
 	static function checkParentNewHomeIsFolder($userName,$homeFolder)

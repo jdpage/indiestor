@@ -16,7 +16,6 @@ requireLibFile('admin/sysqueries/all.php');
 requireLibFile('admin/action-engine/ActionNamingConvention.php');
 requireLibFile('admin/action-engine/UserReportRecord.php');
 requireLibFile('admin/action-engine/UserReportRecords.php');
-requireLibFile('admin/action-engine/DeviceQuota.php');
 requireLibFile('admin/action-engine/Incrontab.php');
 requireLibFile('admin/action-engine/InotifyWatchFolders.php');
 requireLibFile('admin/action-engine/InotifyWait.php');
@@ -84,22 +83,10 @@ class ActionEngine
 		return preg_match('/^[a-z][-a-z0-9_]*$/',$name);
 	}
 
-	static function isValidCharactersInVolume($volume)
-	{
-		//a valid volume may only contain the following characters 
-		return preg_match('/^[-a-zA-Z0-9_\/]*$/',$volume);
-	}
-
 	static function isValidCharactersInFolderName($folder)
 	{
 		//a valid folder may only contain the following characters 
 		return preg_match('/^[-a-zA-Z0-9_\/]*$/',$folder);
-	}
-
-	static function failOnOpenVZ($device)
-	{
-		if($device=='/dev/simfs')
-			ActionEngine::error('SYS_ERR_VOLUME_OPENVZ_NOT_SUPPORTED',array('volume'=>$device));
 	}
 
         static function execute()
