@@ -224,13 +224,6 @@ class User extends EntityType
 		syscommand_usermod_aG($userName,ActionEngine::indiestorUserGroup);
 		EtcPasswd::reset();
 		EtcGroup::reset();
-		//set quota to infinite by default
-		if(!ProgramActions::actionExists('set-quota'))
-		{
-			$device=self::deviceForUser($userName);
-			if(sysquery_quotaon_p($device)===true)
-				syscommand_quotatool($userName,$device,0);
-		}
 		//add samba user
 		syscommand_smbpasswd_a($userName);
         }
