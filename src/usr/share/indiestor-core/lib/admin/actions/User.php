@@ -124,6 +124,15 @@ class User extends EntityType
 		else return $user->homeFolder;
 	}	
 
+        static function deviceForUser($userName)
+        {
+                //find user home folder
+                $homeFolder=self::homeFolderForUser($userName);
+                //find device for user home folder
+                return sysquery_df_device_for_folder($homeFolder);
+        }
+
+
 	static function validateSetZfsQuota($userName)
 	{
 		$commandAction=ProgramActions::findByName('set-zfs-quota');
