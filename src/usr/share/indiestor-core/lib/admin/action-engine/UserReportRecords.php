@@ -89,9 +89,9 @@ class UserReportRecords
 			return;
 		}
 
-		$format1="%-10s %-20s %-6s %-10s %5s %5s %5s %-5s %-5s %-5s\n";
-		$format2="%-10s %-20s %-6s %-10s %5s %5s %5s %-5s %-5s %-5s\n";
-		printf($format1,'user','home','locked','group','quota','used','%used','samba','flags','conn.');
+		$format1="%-10s %-20s %-6s %-10s %8s %5s %5s %-5s %-5s %-5s\n";
+		$format2="%-10s %-20s %-6s %-10s %8s %5s %5s %-5s %-5s %-5s\n";
+		printf($format1,'user','home','locked','group','ZFS quota','used','%used','samba','flags','conn.');
 		foreach($formattedUserRecords as $formattedUserRecord)
 		{
 			printf($format2,
