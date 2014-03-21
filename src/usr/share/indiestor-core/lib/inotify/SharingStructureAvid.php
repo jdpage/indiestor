@@ -13,6 +13,7 @@ requireLibFile('inotify/SharingOperations.php');
 requireLibFile('inotify/SharingFolders.php');
 requireLibFile("inotify/chmodRecursive.php");
 requireLibFile('inotify/shellSilent.php');
+requireLibFile("admin/renameUsingShell.php");
 
 class SharingStructureAvid
 {
