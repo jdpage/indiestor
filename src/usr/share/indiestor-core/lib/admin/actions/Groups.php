@@ -59,5 +59,12 @@ class Groups extends EntityType
 	{
 		InotifyWait::stopWatchingAll();
 	}
+
+        static function statusWatching($commandAction)
+        {
+                if(InotifyWait::statusWatchingAll()==0)
+                        echo "not running\n";
+                else echo "running\n";
+        }
 }
 

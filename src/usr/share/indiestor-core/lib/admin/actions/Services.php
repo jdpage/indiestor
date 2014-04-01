@@ -1,0 +1,87 @@
+<?php
+/*
+        Indiestor program
+        Concept, requirements, specifications, and unit testing
+        By Alex Gardiner, alex@indiestor.com
+        Written by Erik Poupaert, erik@sankuru.biz
+        Commissioned at peopleperhour.com 
+        Licensed under the GPL
+*/
+
+class Services extends EntityType
+{
+	static function startSamba($commandAction)
+	{
+                self::initdServiceAction('samba','start');
+	}
+
+	static function stopSamba($commandAction)
+	{
+                self::initdServiceAction('samba','stop');
+	}
+
+	static function startIncron($commandAction)
+	{
+                self::initdServiceAction('incron','start');
+	}
+
+	static function stopIncron($commandAction)
+	{
+                self::initdServiceAction('incron','stop');
+	}
+
+        static function initdServiceAction($serviceName,$action)
+        {
+                ShellCommand::exec_fail_if_error("/etc/init.d/$serviceName $action");
+        }
+
+        static function initdServiceStatus($serviceName)
+        {
+                $stdout=ShellCommand::query("/etc/init.d/$serviceName status");
+                if(preg_match('/fail/',$stdout)) return false;
+                else return true;
+        }
+
+        static function status()
+        {
+                $status=array();
+                $status['samba']=self::initdServiceStatus('samba');
+                $status['incron']=self::initdServiceStatus('incron');
+                $countPids=InotifyWait::statusWatchingAll();
+                if($countPids>0)
+                        $status['watching']=true;
+                else    $status['watching']=false;
+                return $status;
+        }
+
+        static function show($commandAction)
+        {
+                if(ProgramActions::actionExists('json'))
+                        self::showJSON();
+                else
+                        self::showCLI();
+        }
+
+        static function showCLI()
+        {
+                $status=self::status();
+                foreach($status as $service=>$serviceStatus) 
+                {
+                        if($serviceStatus) $situation='running';
+                        else $situation='not running';
+                        echo "$service $situation\n";
+                }                                
+        }
+
+        static function showJSON()
+        {
+                echo json_encode_legacy(self::status())."\n";
+        }
+
+        static function json($commandAction)
+        {
+                //handled by show command
+                return;
+        }
+}
+

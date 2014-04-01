@@ -29,6 +29,15 @@ class InotifyWait
 			self::startWatching($group->name);
 	}
 
+        static function statusWatchingAll()
+        {
+                $etcGroup=EtcGroup::instance();
+                $countPids=0;
+                foreach($etcGroup->groups as $group)
+			$countPids+=self::statusWatching($group->name);
+                return $countPids;
+        }
+
 	static function watchProcesses($groupName)
 	{
 		return array_merge(
@@ -54,6 +63,12 @@ class InotifyWait
                                 echo "posix error: $posix_error\n";
                 }
 	}
+
+        static function statusWatching($groupName)
+        {
+		$pids=self::watchProcesses($groupName);
+                return count($pids);
+        }
 
 	static function startWatching($groupName)
 	{

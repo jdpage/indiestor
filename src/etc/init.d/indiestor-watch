@@ -15,8 +15,12 @@ case "$1" in
 	echo "Stop indiestor watching"
 	indiestor --groups -stop-watching
     ;;
+  status)
+	indiestor --groups -status-watching
+    ;;
+
   *)
-    echo "Usage: /etc/init.d/indiestor-watch {start|stop}"
+    echo "Usage: /etc/init.d/indiestor-watch {start|stop|status}"
     exit 1
     ;;
 esac
