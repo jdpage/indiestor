@@ -438,6 +438,7 @@ class SharingStructureAvid
                                                 "| grep -v '.avs$' 2> /dev/null ".
                                                 "| grep -v '.xml$' 2> /dev/null ".
                                                 "| grep -v '/Statistics' 2> /dev/null ".
+                                                "| grep -v '/WaveformCache' 2> /dev/null ".
                                                 "| grep -v '/SearchData' 2> /dev/null ";
                                 $finderCmd="$finderCmd1 | wc -l";
                                 $numberOfFiles=shellSilent($finderCmd);
