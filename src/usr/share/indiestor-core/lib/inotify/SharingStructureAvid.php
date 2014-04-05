@@ -68,7 +68,7 @@ class SharingStructureAvid
 		if(is_dir($archived)) 
 		{
 			//check if archive is empty
-			$numberOfItems=intval(shellSilent("ls '$archived' 2> /dev/null | wc -l"));
+			$numberOfItems=intval(shellSilent("ls --ignore resource.frk '$archived' 2> /dev/null | wc -l"));
 			if($numberOfItems==0) shellSilent("rm -rf '$archived'");
 		}
 	}
