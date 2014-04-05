@@ -41,15 +41,15 @@ class Services extends EntityType
         {
                 if($serviceName=='samba')
                         $serviceName=self::findSambaServiceName();
-                ShellCommand::exec_fail_if_error("/etc/init.d/$serviceName $action");
+                ShellCommand::exec_fail_if_error("service $serviceName $action");
         }
 
-        static function initdServiceStatus($serviceName)
+        static function upstartServiceStatus($serviceName)
         {
                 if($serviceName=='samba')
                         $serviceName=self::findSambaServiceName();
-                $stdout=ShellCommand::query("/etc/init.d/$serviceName status");
-                if(preg_match('/fail/',$stdout)) return false;
+                $stdout=ShellCommand::query("service $serviceName status");
+                if(preg_match('/not|stop/',$stdout)) return false;
                 else return true;
         }
 
