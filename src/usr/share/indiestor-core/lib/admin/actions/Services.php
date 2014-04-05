@@ -56,8 +56,8 @@ class Services extends EntityType
         static function status()
         {
                 $status=array();
-                $status['samba']=self::initdServiceStatus('samba');
-                $status['incron']=self::initdServiceStatus('incron');
+                $status['samba']=self::upstartServiceStatus('samba');
+                $status['incron']=self::upstartServiceStatus('incron');
                 $countPids=InotifyWait::statusWatchingAll();
                 if($countPids>0)
                         $status['watching']=true;
