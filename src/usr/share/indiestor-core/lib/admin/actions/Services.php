@@ -30,13 +30,24 @@ class Services extends EntityType
                 self::initdServiceAction('incron','stop');
 	}
 
+        static function findSambaServiceName()
+        {
+                $stdout=ShellCommand::query("uname -a");
+                if(preg_match('/Ubuntu/',$stdout)) return 'smbd';
+                else return 'samba';
+        }
+
         static function initdServiceAction($serviceName,$action)
         {
+                if($serviceName=='samba')
+                        $serviceName=self::findSambaServiceName();
                 ShellCommand::exec_fail_if_error("/etc/init.d/$serviceName $action");
         }
 
         static function initdServiceStatus($serviceName)
         {
+                if($serviceName=='samba')
+                        $serviceName=self::findSambaServiceName();
                 $stdout=ShellCommand::query("/etc/init.d/$serviceName status");
                 if(preg_match('/fail/',$stdout)) return false;
                 else return true;
