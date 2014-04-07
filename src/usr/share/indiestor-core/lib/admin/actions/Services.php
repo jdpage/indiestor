@@ -44,20 +44,20 @@ class Services extends EntityType
                 ShellCommand::exec("/etc/init.d/$serviceName $action");
         }
 
-        static function initdServiceStatus($serviceName)
+        static function upstartServiceStatus($serviceName)
         {
                 if($serviceName=='samba')
                         $serviceName=self::findSambaServiceName();
-                $stdout=ShellCommand::query("/etc/init.d/$serviceName status");
-                if(preg_match('/fail/',$stdout)) return false;
+                $stdout=ShellCommand::query("service $serviceName status");
+                if(preg_match('/not|stop/',$stdout)) return false;
                 else return true;
         }
 
         static function status()
         {
                 $status=array();
-                $status['samba']=self::initdServiceStatus('samba');
-                $status['incron']=self::initdServiceStatus('incron');
+                $status['samba']=self::upstartServiceStatus('samba');
+                $status['incron']=self::upstartServiceStatus('incron');
                 $countPids=InotifyWait::statusWatchingAll();
                 if($countPids>0)
                         $status['watching']=true;
