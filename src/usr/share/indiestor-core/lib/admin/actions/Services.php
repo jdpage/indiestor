@@ -66,7 +66,7 @@ class Services extends EntityType
         static function netatalkServiceStatus($serviceName)
         {
                 $stdout=ShellCommand::query("ps aux | grep afp");
-                if(preg_match("afpd",$stdout)) return true;
+                if(preg_match("/afpd/",$stdout)) return true;
                 else return false;
         }
 
