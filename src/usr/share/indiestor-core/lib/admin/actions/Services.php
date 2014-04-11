@@ -65,7 +65,7 @@ class Services extends EntityType
 
         static function netatalkServiceStatus($serviceName)
         {
-                $stdout=ShellCommand::query("ps aux | grep afpd");
+                $stdout=ShellCommand::query("ps aux | grep afp");
                 if(preg_match("afpd",$stdout)) return true;
                 else return false;
         }
@@ -75,7 +75,7 @@ class Services extends EntityType
                 $status=array();
                 $status['samba']=self::upstartServiceStatus('samba');
                 $status['incron']=self::upstartServiceStatus('incron');
-                $status['incron']=self::netatalkServiceStatus('incron');
+                $status['netatalk']=self::netatalkServiceStatus('netatalk');
                 $countPids=InotifyWait::statusWatchingAll();
                 if($countPids>0)
                         $status['watching']=true;
