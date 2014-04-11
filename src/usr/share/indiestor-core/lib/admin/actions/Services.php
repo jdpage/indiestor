@@ -12,22 +12,32 @@ class Services extends EntityType
 {
         static function startSamba($commandAction)
         {
-                self::initdServiceAction('samba','start');
+                self::upstartServiceAction('samba','start');
         }
 
         static function stopSamba($commandAction)
         {
-                self::initdServiceAction('samba','stop');
+                self::upstartServiceAction('samba','stop');
         }
 
         static function startIncron($commandAction)
         {
-                self::initdServiceAction('incron','start');
+                self::upstartServiceAction('incron','start');
         }
 
         static function stopIncron($commandAction)
         {
-                self::initdServiceAction('incron','stop');
+                self::upstartServiceAction('incron','stop');
+        }
+
+        static function startNetatalk($commandAction)
+        {
+                self::upstartServiceAction('netatalk','start');
+        }
+
+        static function stopNetatalk($commandAction)
+        {
+                self::upstartServiceAction('netatalk','stop');
         }
 
         static function findSambaServiceName()
@@ -37,7 +47,7 @@ class Services extends EntityType
                 else return 'samba';
         }
 
-        static function initdServiceAction($serviceName,$action)
+        static function upstartServiceAction($serviceName,$action)
         {
                 if($serviceName=='samba')
                         $serviceName=self::findSambaServiceName();
@@ -53,11 +63,19 @@ class Services extends EntityType
                 else return true;
         }
 
+        static function netatalkServiceStatus($serviceName)
+        {
+                $stdout=ShellCommand::query("ps aux | grep afpd");
+                if(preg_match("afpd",$stdout)) return true;
+                else return false;
+        }
+
         static function status()
         {
                 $status=array();
                 $status['samba']=self::upstartServiceStatus('samba');
                 $status['incron']=self::upstartServiceStatus('incron');
+                $status['incron']=self::netatalkServiceStatus('incron');
                 $countPids=InotifyWait::statusWatchingAll();
                 if($countPids>0)
                         $status['watching']=true;
