@@ -10,25 +10,25 @@
 
 class Services extends EntityType
 {
-	static function startSamba($commandAction)
-	{
+        static function startSamba($commandAction)
+        {
                 self::initdServiceAction('samba','start');
-	}
+        }
 
-	static function stopSamba($commandAction)
-	{
+        static function stopSamba($commandAction)
+        {
                 self::initdServiceAction('samba','stop');
-	}
+        }
 
-	static function startIncron($commandAction)
-	{
+        static function startIncron($commandAction)
+        {
                 self::initdServiceAction('incron','start');
-	}
+        }
 
-	static function stopIncron($commandAction)
-	{
+        static function stopIncron($commandAction)
+        {
                 self::initdServiceAction('incron','stop');
-	}
+        }
 
         static function findSambaServiceName()
         {
@@ -41,7 +41,7 @@ class Services extends EntityType
         {
                 if($serviceName=='samba')
                         $serviceName=self::findSambaServiceName();
-                ShellCommand::exec("/etc/init.d/$serviceName $action");
+                ShellCommand::exec_fail_if_error("service $serviceName $action");
         }
 
         static function upstartServiceStatus($serviceName)
@@ -95,4 +95,3 @@ class Services extends EntityType
                 return;
         }
 }
-
