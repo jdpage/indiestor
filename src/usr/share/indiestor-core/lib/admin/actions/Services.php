@@ -28,6 +28,10 @@ class Services extends EntityType
         static function stopIncron($commandAction)
         {
                 self::upstartServiceAction('incron','stop');
+                sleep(1);
+                /* incron may refuse to stop on ubuntu precise */
+                $pid=ShellCommand::query("ps ax | grep incron | head -n1 | awk '{ print $1}'");
+                if($pid!='') ShellCommand::exec("kill -9 $pid");
         }
 
         static function startNetatalk($commandAction)
@@ -51,7 +55,7 @@ class Services extends EntityType
         {
                 if($serviceName=='samba')
                         $serviceName=self::findSambaServiceName();
-                ShellCommand::exec_fail_if_error("service $serviceName $action");
+                ShellCommand::exec("service $serviceName $action");
         }
 
         static function upstartServiceStatus($serviceName)
