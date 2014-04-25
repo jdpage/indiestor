@@ -37,13 +37,13 @@ class Services extends EntityType
         static function startNetatalk($commandAction)
         {
                 self::upstartServiceAction('netatalk','start');
-                sleep(2);
+                sleep(4);
         }
 
         static function stopNetatalk($commandAction)
         {
                 self::upstartServiceAction('netatalk','stop');
-                sleep(2);
+                sleep(4);
         }
 
         static function findSambaServiceName()
