@@ -1,16 +1,14 @@
 .\" Process this file with
 .\" groff -man -Tascii indiestor.1
 .\"
-.TH indiestor 1 "AUGUST 2013" Linux "User Manuals"
+.TH indiestor 1 "APRIL 2014" Linux "User Manuals"
 .SH NAME
-indiestor - Project & MXF media sharing for Avid Media Composer
+indiestor - A project and media sharing storage solution for Avid Media Composer
 .SH SYNOPSIS
 .B indiestor
- --volumes [-show -purge-fstab-backups]
-
- --volume [<arg> -quota-on -quota-off -quota-remove]
-
  --groups [-show -start-watching -stop-watching]
+
+ --groups [-show -json]
 
  --group [-add -delete -show-members -start-watching -stop-watching -show-watch-processes]
 
@@ -18,19 +16,23 @@ indiestor - Project & MXF media sharing for Avid Media Composer
 
  --users [-show -show-incrontab -regenerate-incrontab -reshare]
 
- --user [<arg> -add -delete -expel -set-home <arg> -remove-home -set-group <arg> -unset-group -set-quota <arg> -remove-quota -set-passwd <arg> -lock -add-to-samba]
+ --users [-show -json]
+
+ --user [<arg> -add -delete -expel -set-home <arg> -remove-home -set-group <arg> -unset-group -set-zfs-quota <arg> -remove-zfs-quota -set-passwd <arg> -lock -add-to-samba]
 
  --user [<arg> -remove-from-indiestor -remove-from-samba]
 
  --user [<arg> -reshare]
 
+ --services [-start-watching -stop-watching -start-incron -stop-incron -start-samba -stop-samba -start-netatalk -stop-netatalk]
+ 
+ --services [-show -json]
+
  --help
 .SH DESCRIPTION
-indiestor provides a complete OpenSource solution for Avid project & MXF/AMA media sharing. It takes care of the management of volumes, groups and users (homes, passwords, quotas). Incron is used to trigger the sharing of projects and the patching of Avid MXF media folders.
+indiestor provides a complete Open Source solution for Avid project, bin and media sharing. It takes care of the management of groups and users. Incron is used to trigger the sharing of projects and the patching of Avid MXF media folders. Indiestor does not eumulate AECIFS or attept to offer Avid style bin locking.
 
-As such there is no requirement for a client side application, which reduces the learning curve for editors.
-
-To trigger sharing the editor must name a new project or rename an existing project/media directory as follows:
+Instead to share a project the editor must simply name a new project (or rename an existing) as follows:
 
 For avid shared projects use:
 .B
@@ -40,71 +42,33 @@ For AMA volumes, legacy style FCP projects or anything else use:
 .B
  <foldername>.shared
 
-Be aware that indiestor only listens to share trigger requests on the top level of each home directory. You cannot nest shares within folders or sub folders.
+NB: Indiestor only listens to share trigger requests on the top level of the users home directory.
 
 In the case of avid shares, upon detecting the
 .B .avid
 trigger, indiestor will automatically create and distribute a
 .B .copy
-version of the project to each member of the group. Media sharing is automatically enabled as soon as media exists in /USER/Avid MediaFiles/MXF.
+version of the project to each member of the group. Media sharing is automatically enabled as soon as media exists in /<USER>/Avid MediaFiles/MXF.
 
-Once inside the project bins are easily exchanged via the 'sharing tree' - a network of folders, which are offered read-only to group members. Upon opening another editors bin we recommend that editors simply drag clips and sequences to their own bins for modification/IN/OUT etc. An Unprotected folder is provided for conveniently exchanging bins.
+Once inside the project bins are easily exchanged via the 'sharing tree' - a network of folders, which are offered read-only to group members. An Unprotected folder is provided for conveniently exchanging bins between each user.
 
 As a sanity check indiestor is designed to reject .avid trigger requests for folders without valid .avp files.
 
-.B NB:
-At present  users can only be a member of one group at a time. All users in a group will share all projects. The project owner can unshare a project by removing the share trigger.  For example, by renaming the folder "mydocumentary.avid" to "mydocumentary", the project owner will have removed the ".avid" trigger. This will cause indiestor to unshare the "mydocumentary" project. When unsharing a project, Indiestor will archive the members work in the project owner's folder in the "Archived" subfolder.
+.B ONE GROUP PER USER LIMITATION:
+At present users can only be a member of one group at a time. If we raise enough funding through sales of our GUI we'll implement multiple group membership. All users in a group will share all projects.
+
+.B UNSHARING:
+The project owner can unshare a project by removing the share trigger. For example, by renaming the folder "mydocumentary.avid" to "mydocumentary", the project owner will have removed the ".avid" trigger. This will cause indiestor to unshare the "mydocumentary" project. When unsharing a project, Indiestor will archive the members work in the project owner's folder in the "Archived" subfolder.
 .SH OPTIONS
 There are seven main entities on which indiestor operates:
 
-.B --volumes, --volume, --groups, --group, --users, --user, --help
+.B --groups, --group, --users, --user, --services --help
 
 A command consists in executing an action on an entity. For example, showing all users is done using either of the following:
 
 .B indiestor --users -show
 
 .B indiestor -show --users
-
-All supported entity/action options are listed below:
-
-.IP --volumes
-
-.B -show:
-Shows the list of volumes.
-
-.B -purge-fstab-backups:
-When enabling quotas, the system modifies the
-.B /etc/fstab
-file. It will create a dated backup of the existing version of
-.B /etc/fstab
-in the
-.B /etc
-folder. Use this action to purge all such backups.
-
-.IP --volume <arg>
-
-The
-.B <arg>
-argument is the volume name.
-
-Example:
-.B /dev/hda1
-or
-.B /dev/sda1
-or other devices available on the system.
-
-.B -quota-on:
-Switches on the quota system for the volume.
-
-.B -quota-off:
-Switches off the quota system for the volume.
-
-.B -quota-remove:
-Removes the entry in
-.B /etc/fstab
-that enables the quota system for the volume and removes the
-.B quota.user
-file in the root of the volume's file system.
 
 .IP --groups
 
@@ -118,6 +82,11 @@ Starts indiestor-inotify watching for share triggers
 
 .B -stop-watching:
 Stops indiestor-inotify watching for share triggers
+
+.IP --groups
+
+.B -show -json:
+JSON export of the group list (for easy plugin to GUI applications)
 
 .IP --group <arg>
  
@@ -168,13 +137,13 @@ Y=yes, N=no
 indiestor group for the user*
 
 .B 	quota: 
-in gigabytes
+ZFS in gigabytes
 
 .B 	used: 
-gigabytes of quota used
+gigabytes of ZFS quota used
 
 .B 	%used:
-percentage of quota used up
+percentage of ZFS quota used up
 
 .B 	samba: 
 Y=has samba access, N=does not have samba access
@@ -185,16 +154,18 @@ samba flags. Normally U=user.
 .B 	conn.: 
 Currently connected through samba. Y=yes. N=no.
 
-*none if the user does not belong to an indiestor group.
-
-.B -show-incrontab:
-depreciated in 0.9.4 in favor of -show-watches. Please see --group section.
+* "-" if the user does not belong to an indiestor group.
 
 .B  -regenerate-incrontab:
 for debugging purposes. If the incrontab seems inconsistent, you can forcably regenerate it.
 
 .B  -reshare:
 reshares all triggers and updates share permission, should you need to prompt the system.
+
+.IP --users
+
+.B -show -json:
+JSON export of the users list (for easy plugin to GUI applications)
 
 .IP --user
 .B <arg>
@@ -224,11 +195,11 @@ sets the group for the user named to the indiestor group <arg>. This indiestor g
 .B -unset-group:
 removes the user named from his/her current indiestor group.
 
-.B -set-quota  <arg>:
-sets the quota for the user named to <arg> gigabytes. Must be a valid number of gigabytes.
+.B -set-zfs-quota  <arg>:
+sets the zfs quota for the user named to <arg> gigabytes (if the home is ZFS based). Must be a valid number of gigabytes.
 
 .B -remove-quota:
-removes the quota for the user and makes his/her quota unlimited.
+removes the ZFS quota for the user and makes his quota unlimited.
 
 .B -set-passwd <arg>:
 sets the user's password to <arg>.
@@ -252,6 +223,36 @@ Removes the user <arg> from samba. This action cannot be combined with other act
 .IP --user <arg>:
 .B -reshare:
 reshares all project folders and media manually (for the specified user).
+
+.IP --services <arg>:
+.B -start-watching:
+Starts indiestor watches (same as groups -start-watching)
+
+.B -stop-watching:
+Stops indiestor watches (same as groups -start-watching)
+
+.B -start-samba:
+Starts samba server
+
+.B -stop-watching:
+Stops samba server
+
+.B -start-netatalk:
+Starts netatalk server
+
+.B -stop-netatalk:
+Stops netatalk server
+
+.B -start-incron:
+Starts incron service
+
+.B -stop-incron:
+Stops incron service
+
+.IP --services
+
+.B -show -json:
+JSON export of the servcice list (for easy plugin to GUI applications)
 
 .IP --help:
 Shows the command the synopsis.
@@ -286,82 +287,25 @@ Must list the indienotify user. The indienotify user is the user for which incro
 .RS
 The incron table for the indienotify system user. The indiestor and indiestor-inotify commands regenerate this table as needed as a consequence of admin actions or as a consequence of changes in the filesystem monitored. In case of issues, use the --users -regenerate-incrontab option to regenerate this file. You can show the content of the file with the option --users -show-incrontab.
 .RE
-.I /etc/init.d/indiestor-quota
-.RS
-This init.d script keeps quotas switched on following a system restart. It can be manually started and stopped using "sudo /etc/init.d/indiestor-quota start/stop"
-.RE
 .I /etc/init.d/indiestor-watch
 .RS
 This init.d script starts/stops all watches. It is deployed on installation and positioned to initialise when the system boots.
 .RE
-.I /srv/indiestor.quota
-.RS
-Here we maintain a list of volumes with quotas active, this is linked to /etc/init.d/indiestor-quota
-.RE
 .I /etc/super.tab
 .RS
 This file must have an entry for the indiestor and indiestor-inotify command ensuring that the indiewheel group can operate the indiestor command as root and the indienotify user to operate the indiestor-inotify command as root.
-
-Use:
-
-.B sudo usermod -a -G indiewheel <username-to-add>
-
+.RE
+.I /etc/netatalk/Applevolumes.default
+.RS
+Share export for indiestor-mac homes.
 .RE
 .I /etc/samba/smb.conf
 .RS
-Must list an indiestor share with valid users in the indiestor-users group. SMB must be configured for
-.B "security=user"
-type authentication.
-
-The following global and share entries are required:
-
-.B [global]
- # The following parameters are required for the correct function of indiestor
- security = user
- unix extensions = no
- nt acl support = no
- store dos attributes= no
- log level = 1
- # The following 3  parameters offer a SMB tuning that should perform well in
- # most cases. If you experience issues, you  may opt to commend these lines
- # out, or begin your own custom tuning to suit.
- socket options = TCP_NODELAY IPTOS_LOWDELAY SO_SNDBUF=32768 SO_RCVBUF=32768
- max xmit = 65536
- write cache size = 131072
-
-.B [indiestor-win]
- comment = indiestor home directories for Windows clients
- browseable = no
- writeable = yes
- path = %H
- veto files = /resource.frk/
- hide files = /.DS_Store/
- follow symlinks = yes
- valid users = @indiestor-users
- wide links = yes
- map read only = permissions
- inherit permissions = no
- force create mode = 0644
- force directory mode = 0755
- create mask = 0644
- directory mask = 0755
-
-.B [indiestor-mac]
- comment = indiestor home directories for OS X clients
- browseable = no
- writeable = yes
- path = %H
- hide files = /Thumbs.db/
- follow symlinks = yes
- valid users = @indiestor-users
- wide links = yes
- map read only = permissions
- inherit permissions = no
- force create mode = 0644
- force directory mode = 0755
- create mask = 0644
- directory mask = 0755
-
+Share export for indiestor-win homes.
+.RE
+.I /etc/samba/smb.conf
+.RS
+Must list indiestor shares.
 .RE
 .I /var/lib/samba
 .RS
@@ -371,26 +315,16 @@ Indiestor automatically keeps the users and passwords for the indiestor-users gr
 .RS
 indiestor-inotify logs its operations to this file, which is the system log file. You can inspect it with the command:
 .RE
-.I /etc/fstab
-.RS
-Indiestor modifies this file to enable quota, by adding or removing the usrquota attribute to the volume being subjected or relieved from the use of user quota.
-.RE
 .I /etc/shadow
 .RS
 The system stores the user passwords in this file.
-.RE
-.I quota.user
-.RS
-Quota file in the root of the filesystem for the volume for which the quota system has been enabled.
 .RE
 .SH MISCELLANEOUS NOTES
 
 .B Connecting Mac clients to indiestor:
 Users should switch to Finder and use Command + K or click Go > connect to server:
 
-smb://<IP-ADDRESS-or-HOST-NAME>/indiestor-mac
-
-Mac users on 10.6.8 (Snow Leopard) or newer are advised to use the replacement Thursby Dave SMB client to satisfy the needs of Avid Media Composer. We strongly recommend you test this before purchasing Dave. A trail is available at the Thursby site.
+afp://<IP-ADDRESS-or-HOST-NAME>/indiestor-mac
 
 .B Connecting Windows clients to indiestor:
 For windows use the built in CIFS/SMB client. Right click on "Computer" then choose Map Network Drive.
@@ -403,18 +337,6 @@ The 'Connect using different credentials' is handy if windows signs you in autom
 
 NB: Windows users must to disable UAC.
 
-.B Mixed Mac and Windows projects
-
-This is now possible after some adjustments. Be aware that Windows and Mac clients must connect to the appropriate share point for their OS  -as desribed above.
-
-The following caveats must also be noted:
-
-There is a fundamental difference in the way Windows and Mac clients map network drives. While Windows likes to use drive letters (eg. indiestor mounted as Z:), OS X uses the UNC path (drives should mount as 'indiestor-mac').
-
-In practice when media is imported by an editor on the opposing OS, it will initially appear offline. You can see this by looking at the 'drive' path of the offline media in a bin. Luckily once a bin is closed (then re-opened), Avid refreshes the path by itself. Likewise, closing and opening the whole project will usually refresh all bins.
-
-For the same reason, AMA volumes cannot be shared using the '.shared' trigger on a mixed platform project.
-
 .B Enable Avid "All Drives":
 this option must be enabled on all client Media Composer workstations, since it enables Media Composer to see NAS based network mounts. You can toggle this on/off by using the console in Media Composer. Tools > Console and type "alldrives 1". In the event that this option is forgotton, media will simply remain offline.
 
@@ -423,18 +345,7 @@ The console should respond with:
 
 This only has to be set once on each workstation.
 
-.B Media Creation Settings:
-Please take care to ensure Avid "media creation" settings reflect the use of the indiestor drive.
-
-.B User shell access restricted:
-As of 0.8.1.6 non-root indiestor created users do not have access to shell.
-.SH DIAGNOSTICS
-
 .B GENERAL DIAGNOSTIC INFORMATION:
-You can find the complete list error messages triggered by indiestor including their description in the file:
-
-.B /usr/share/indiestor/admin/arg-definitions/noticeDefinitions.conf
-
 Further diagnostic information can be found on the Technical FAQs page at:
 
 .B http://www.indiestor.com/documentation/getting-started/admin-faq
