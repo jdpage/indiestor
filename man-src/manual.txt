@@ -3,9 +3,12 @@
 .\"
 .TH indiestor 1 "APRIL 2014" Linux "User Manuals"
 .SH NAME
-indiestor - A project and media sharing storage solution for Avid Media Composer
+indiestor - an Open Source storage platform for Avid project, bin and media sharing.
 .SH SYNOPSIS
+Command line list:
+
 .B indiestor
+
  --groups [-show -start-watching -stop-watching]
 
  --groups [-show -json]
@@ -30,7 +33,7 @@ indiestor - A project and media sharing storage solution for Avid Media Composer
 
  --help
 .SH DESCRIPTION
-indiestor native is an Open Source storage platform for Avid collaboration. In its basic form, it comprises of a free command line tool, which takes care of the management of both groups and users, as well as the sharing of projects and media. Incron and inotify are used to trigger the sharing transparently, its all pretty neat. Indiestor does not attempt to eumulate AECIFS or reverse engieneer Avid style bin locking. Instead it is a home centric storage solution where each editor has his/her own network home. To share a project with the group an editor must simply name a new or existing project as follows:
+indiestor native is an an Open Source storage platform for Avid project, bin and media sharing. In its basic form, it comprises of a free command line tool, which takes care of the management of both groups and users, as well as the sharing of projects and media. Incron and inotify are used to trigger the sharing transparently, its all pretty neat. Indiestor does not attempt to eumulate AECIFS or reverse engieneer Avid style bin locking. Instead it is a home centric storage solution where each editor has his/her own network home. To share a project with the group an editor must simply name a new or existing project as follows:
 
 For avid shared projects use:
 .B
