@@ -20,9 +20,11 @@ indiestor - an Open Source storage platform for Avid project, bin and media shar
 
  --users [-show -json]
 
- --user [<arg> -add -delete -expel -set-home <arg> -remove-home -set-group <arg> -unset-group -set-zfs-quota <arg> -remove-zfs-quota -set-passwd <arg> -lock -add-to-samba]
+ --user [<arg> -add -delete -set-home <arg> -remove-home -set-group <arg> -unset-group -set-zfs-quota <arg> -remove-zfs-quota -set-passwd <arg> -lock -add-to-samba]
 
- --user [<arg> -remove-from-indiestor -remove-from-samba]
+ --user [<arg> -remove-from-indiestor]
+
+ --user [<arg> -remove-from-samba]
 
  --user [<arg> -reshare]
 
@@ -58,7 +60,7 @@ version of the project to each member of the group. The .copy project can be fou
 Inside each node of the shared project you will find the 'sharing tree' - a network of folders, which are offered read-only to group members. An Unprotected folder is provided for conveniently exchanging bins. Of course this is very different scenario to the Avid Unity/ISIS environment. However, it is a powerful tool that provides some great features for practically zero cost.
 
 .B SHARING MEDIA:
-Media sharing between the group is automatically enabled as soon as media exists in /Avid MediaFiles/MXF. As an aside it is quite possible to use indiestor as a cheap space expansion for an exsiting ethernet based Avid storage solution.
+Media sharing between the group is automatically enabled as soon as media exists in /Avid MediaFiles/MXF. As an aside, it is quite possible to use indiestor as a cheap way of expanding an exsiting ethernet based storage solution.
 
 .B ONE GROUP LIMITATION:
 At present users can only be a member of one group at a time. However, we aim to raise enough funding through sales of our GUI to implement multiple group membership and extended ZFS features. Our feature roadmap is available here: http://indiestor.com/indiestor-roadmap-2014-2015
@@ -136,14 +138,14 @@ Y=yes, N=no
 .B 	group: 
 indiestor group for the user*
 
-.B 	quota: 
-ZFS in gigabytes
+.B 	ZFS quota: 
+ZFS quota in gigabytes
 
 .B 	used: 
-gigabytes of ZFS quota used
+gigabytes used
 
 .B 	%used:
-percentage of ZFS quota used up
+percentage used
 
 .B 	samba: 
 Y=has samba access, N=does not have samba access
@@ -151,8 +153,8 @@ Y=has samba access, N=does not have samba access
 .B 	flags: 
 samba flags. Normally U=user.
 
-.B 	conn.: 
-Currently connected through samba. Y=yes. N=no.
+.B 	SMB conn.: 
+Currently connected through samba.
 
 * "-" if the user does not belong to an indiestor group.
 
@@ -180,9 +182,6 @@ adds the user named to indiestor. If the user account does not exist, indiestor 
 .B -delete:
 removes the user named from indiestor.
 
-.B -expel:
-forcibly logs out the user named from the system.
-
 .B -set-home <arg>:
 sets the home directory for the user named to <arg>.
 
@@ -198,7 +197,7 @@ removes the user named from his/her current indiestor group.
 .B -set-zfs-quota  <arg>:
 sets the zfs quota for the user named to <arg> gigabytes (if the home is ZFS based). Must be a valid number of gigabytes.
 
-.B -remove-quota:
+.B -remove-zfs-quota:
 removes the ZFS quota for the user and makes his quota unlimited.
 
 .B -set-passwd <arg>:
@@ -339,15 +338,15 @@ The 'Connect using different credentials' is handy if windows signs you in autom
 
 NB: Windows users must to disable UAC before attempting to use NAS drives with Avid.
 
-.B Workstation setup/Enable Avid "All Drives":
-this option must be enabled on all client Media Composer workstations, since it enables Media Composer to see NAS based network mounts. You can toggle this on/off by using the console in Media Composer. Tools > Console and type "alldrives 1". In the event that this option is forgotton, media will simply remain offline.
+.B Enable Avid "All Drives":
+this option must be enabled as it allows Avid to use third party network shares. You can enable it by going into the Avid "Tools" menu, choosing the "Console" option then and typing "alldrives 1".
 
-The console should respond with:
+Hit enter and the console should respond with:
  "All drives will be viewed as media drives"
 
 This only has to be set once on each workstation.
 
-.B GENERAL DIAGNOSTIC INFORMATION:
+.B FURTHER DIAGNOSTIC INFORMATION:
 Further diagnostic information can be found on the Technical FAQs page at: http://www.indiestor.com/documentation/getting-started/admin-faq
 
 .B Indiestor GUI:
