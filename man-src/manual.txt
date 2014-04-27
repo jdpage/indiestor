@@ -32,11 +32,15 @@ indiestor - an Open Source storage platform for Avid project, bin and media shar
 
  --help
 .SH DESCRIPTION
-indiestor native is an an Open Source storage platform for Avid collboration. In its basic form, it comprises of a completely free command line tool, which takes care of the management of both groups and users, as well as the sharing of projects, bins and media. Incron and inotify are used to transparantly trigger the sharing, its all pretty compact and neat. Please understand that indiestor does not attempt to eumulate AECIFS or Avid style bin locking. Instead it is a home centric storage solution where each editor has his/her own network home.
+indiestor native is an an Open Source storage platform for Avid collboration. It consists of a completely free command line tool, which takes care of the management of both groups and users, as well as the sharing of projects, bins and media. Incron and inotify are used to transparantly trigger sharing, so there is very little for the editor to learn. Be aware that indiestor does not attempt to eumulate AECIFS or Avid style bin locking. Instead it is a home centric storage solution where each editor has his/her own network home.
 
 
 .B SHARING PROJECTS:
-To share a project an editor must a) be in a group with his co-editors b) simply name a new or existing project as follows:
+To share a project an editor must
+B. a)
+be in a group with his co-editors
+B. b)
+simply name a new or existing project as follows:
 
 For avid shared projects use:
 .B
