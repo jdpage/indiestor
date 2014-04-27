@@ -32,31 +32,39 @@ indiestor - an Open Source storage platform for Avid project, bin and media shar
 
  --help
 .SH DESCRIPTION
-indiestor native is an an Open Source storage platform for Avid collboration. In its basic form, it comprises of a completely free command line tool, which takes care of the management of both groups and users, as well as the sharing of projects, bins and media. Incron and inotify are used to transparantly trigger the sharing, its all pretty compact and neat. Please understand that indiestor does not attempt to eumulate AECIFS or Avid style bin locking. Instead it is a home centric storage solution where each editor has his/her own network home. To share a project with the group an editor must simply name a new or existing project as follows:
+indiestor native is an an Open Source storage platform for Avid collboration. In its basic form, it comprises of a completely free command line tool, which takes care of the management of both groups and users, as well as the sharing of projects, bins and media. Incron and inotify are used to transparantly trigger the sharing, its all pretty compact and neat. Please understand that indiestor does not attempt to eumulate AECIFS or Avid style bin locking. Instead it is a home centric storage solution where each editor has his/her own network home.
+
+
+.B SHARING PROJECTS:
+To share a project an editor must a) be in a group with his co-editors b) simply name a new or existing project as follows:
 
 For avid shared projects use:
 .B
  <projectname>.avid
 
-For fodlers containning AMA volumes, legacy style FCP projects or anything else use:
+For fodlers containing AMA volumes, legacy style FCP projects or anything else use:
 .B
  <foldername>.shared
 
-NB: Indiestor only listens to share triggers on the top level of the users home directory.
+.B NB:
+indiestor only listens to share triggers on the top level of the users home directory.
 
-In the case of avid shares, upon detecting the
+In the case of avid shares, the
 .B .avid
-trigger, indiestor will automatically create and distribute a
+trigger propmts indiestor to automatically create and distribute a
 .B .copy
-version of the project to each member of the group. It can be found in the “Avid Shared Projects” folder. Media sharing is automatically enabled as soon as media exists in /<USER>/Avid MediaFiles/MXF.
+version of the project to each member of the group. The .copy project can be found in the “Avid Shared Projects” sub folder.
 
-When the project is open bins and content are easily exchanged via the 'sharing tree' - a network of folders, which are offered read-only to group members. An Unprotected folder is provided for conveniently exchanging bins between each user. Of course this is very different to a bona fide Avid Unity/ISIS bin locking environment. However, it is a powerful tool which provides a lot of protection for a fraction of the cost.
+Inside each shared project you will find the indiestor 'sharing tree' - a network of folders, which offer their contents read-only to other group members. An Unprotected folder is provided for conveniently exchanging bins. Of course this is very different scenario to the Avid Unity/ISIS environment. However, it is a powerful tool which provides a lot of protection for practically zero cost. It also arguably offers more protection which suits certain siutations very well.
+
+.B SHARING MEDIA:
+Media sharing is automatically enabled as soon as media exists in a users /Avid MediaFiles/MXF directory. Media is offered read only to other members in the group. As an aside it is quite possible to use indiestor native as a cheap space expansion for an exsiting project sharing solution. Deploying indiestor storage alongside an existing ethernet solution is a popular use of this tool.
 
 .B ONE GROUP LIMITATION:
-At present users can only be a member of one group at a time. If we raise enough funding through sales of our GUI we'll implement multiple group membership and extended ZFS features.
+At present users can only be a member of one group at a time. However we aim to raise funding through sales of our GUI to implement multiple group membership and extended ZFS features. Our feature roadmap is available here: http://indiestor.com/indiestor-roadmap-2014-2015
 
 .B UNSHARING:
-The project owner can unshare a project by removing the share trigger. For example, by renaming the folder “episode3.avid" to “episode”3, the project owner will have removed the ".avid" trigger. In turn this will cause indiestor to unshare the project. When unsharing a project, indiestor will automatically archive the members work in editors shared folder.
+The project owner can unshare a project by simply removing the share trigger. For example, by renaming the folder “episode3.avid" to “episode”3, the project owner will have removed the ".avid" trigger. This will cause indiestor to automatically unshare the project and archive each members work from /shared/<user>.
 .SH OPTIONS
 There are seven main entities through which the commad line operates:
 
