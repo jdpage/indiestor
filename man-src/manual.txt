@@ -30,45 +30,35 @@ indiestor - A project and media sharing storage solution for Avid Media Composer
 
  --help
 .SH DESCRIPTION
-indiestor provides a complete Open Source solution for Avid project, bin and media sharing. It takes care of the management of groups and users. Incron is used to trigger the sharing of projects and the patching of Avid MXF media folders. Indiestor does not eumulate AECIFS or attept to offer Avid style bin locking.
-
-Instead to share a project the editor must simply name a new project (or rename an existing) as follows:
+indiestor native is an Open Source storage platform for Avid collaboration. In its basic form, it comprises of a free command line tool, which takes care of the management of both groups and users, as well as the sharing of projects and media. Incron and inotify are used to trigger the sharing transparently, its all pretty neat. Indiestor does not attempt to eumulate AECIFS or reverse engieneer Avid style bin locking. Instead it is a home centric storage solution where each editor has his/her own network home. To share a project with the group an editor must simply name a new or existing project as follows:
 
 For avid shared projects use:
 .B
  <projectname>.avid
 
-For AMA volumes, legacy style FCP projects or anything else use:
+For fodlers containning AMA volumes, legacy style FCP projects or anything else use:
 .B
  <foldername>.shared
 
-NB: Indiestor only listens to share trigger requests on the top level of the users home directory.
+NB: Indiestor only listens to share triggers on the top level of the users home directory.
 
 In the case of avid shares, upon detecting the
 .B .avid
 trigger, indiestor will automatically create and distribute a
 .B .copy
-version of the project to each member of the group. Media sharing is automatically enabled as soon as media exists in /<USER>/Avid MediaFiles/MXF.
+version of the project to each member of the group. It can be found in the “Avid Shared Projects” folder. Media sharing is automatically enabled as soon as media exists in /<USER>/Avid MediaFiles/MXF.
 
-Once inside the project bins are easily exchanged via the 'sharing tree' - a network of folders, which are offered read-only to group members. An Unprotected folder is provided for conveniently exchanging bins between each user.
+When the project is open bins and content are easily exchanged via the 'sharing tree' - a network of folders, which are offered read-only to group members. An Unprotected folder is provided for conveniently exchanging bins between each user. Of course this is very different to a bona fide Avid Unity/ISIS bin locking environment. However, it is a powerful tool which provides a lot of protection for a fraction of the cost.
 
-As a sanity check indiestor is designed to reject .avid trigger requests for folders without valid .avp files.
-
-.B ONE GROUP PER USER LIMITATION:
-At present users can only be a member of one group at a time. If we raise enough funding through sales of our GUI we'll implement multiple group membership. All users in a group will share all projects.
+.B ONE GROUP LIMITATION:
+At present users can only be a member of one group at a time. If we raise enough funding through sales of our GUI we'll implement multiple group membership and extended ZFS features.
 
 .B UNSHARING:
-The project owner can unshare a project by removing the share trigger. For example, by renaming the folder "mydocumentary.avid" to "mydocumentary", the project owner will have removed the ".avid" trigger. This will cause indiestor to unshare the "mydocumentary" project. When unsharing a project, Indiestor will archive the members work in the project owner's folder in the "Archived" subfolder.
+The project owner can unshare a project by removing the share trigger. For example, by renaming the folder “episode3.avid" to “episode”3, the project owner will have removed the ".avid" trigger. In turn this will cause indiestor to unshare the project. When unsharing a project, indiestor will automatically archive the members work in editors shared folder.
 .SH OPTIONS
-There are seven main entities on which indiestor operates:
+There are seven main entities through which the commad line operates:
 
 .B --groups, --group, --users, --user, --services --help
-
-A command consists in executing an action on an entity. For example, showing all users is done using either of the following:
-
-.B indiestor --users -show
-
-.B indiestor -show --users
 
 .IP --groups
 
@@ -263,11 +253,11 @@ It is possible to combine multiple actions for the same entity.
 
 For example:
 
-.B indiestor --user john -add -set-group grp1 -set-quota 20 -passwd hello
+.B indiestor --user john -add -set-group grp1 -passwd hello
 
-The command above adds the user "john" to indiestor, to the group "grp1", sets his/her quota to 20 gigabytes and his/her password to "hello". By default, the system will create john's home folder in
+The command above adds “john” to the system, make him a memeber of the group "grp1" and sets his password to "hello". By default, the system will create john's home folder in
 .B /home/john
-. You can override this default by using the -set-home <arg> option.
+. You can override this default by using the -set-home <arg> option. If the target path is a ZFS storage pool indiestor will create an individual dataset for the user, although at present we only recommend using ZFS storage with windows clients.
 
 .SH FILES
 .I /etc/passwd
@@ -297,11 +287,11 @@ This file must have an entry for the indiestor and indiestor-inotify command ens
 .RE
 .I /etc/netatalk/Applevolumes.default
 .RS
-Share export for indiestor-mac homes.
+Netatalk home shares for Mac clients.
 .RE
 .I /etc/samba/smb.conf
 .RS
-Share export for indiestor-win homes.
+Netatalk home shares for Windows clients.
 .RE
 .I /etc/samba/smb.conf
 .RS
@@ -326,6 +316,8 @@ Users should switch to Finder and use Command + K or click Go > connect to serve
 
 afp://<IP-ADDRESS-or-HOST-NAME>/indiestor-mac
 
+Mac users will see a warning that “project settings not saved due to an error”. While this can be midly annoying it is largely cosemtic and only effects the .avp file. In our testing AFP hugely out performs Samba on the Mac platform. For users that wish to use Samba on Mac, they will need a Thursby Dave license (which is a third party samba client for Mac) and to uncomment the “indiestor-mac” share in /etc/samba/smb.conf.
+
 .B Connecting Windows clients to indiestor:
 For windows use the built in CIFS/SMB client. Right click on "Computer" then choose Map Network Drive.
 
@@ -335,7 +327,7 @@ All users in a group should agree to map mounts to the same drive letter using t
 
 The 'Connect using different credentials' is handy if windows signs you in automatically.
 
-NB: Windows users must to disable UAC.
+NB: Windows users must to disable UAC before attempting to use NAS drives with Avid.
 
 .B Enable Avid "All Drives":
 this option must be enabled on all client Media Composer workstations, since it enables Media Composer to see NAS based network mounts. You can toggle this on/off by using the console in Media Composer. Tools > Console and type "alldrives 1". In the event that this option is forgotton, media will simply remain offline.
@@ -346,9 +338,11 @@ The console should respond with:
 This only has to be set once on each workstation.
 
 .B GENERAL DIAGNOSTIC INFORMATION:
-Further diagnostic information can be found on the Technical FAQs page at:
+Further diagnostic information can be found on the Technical FAQs page at: http://www.indiestor.com/documentation/getting-started/admin-faq
 
-.B http://www.indiestor.com/documentation/getting-started/admin-faq
+
+.B Indiestor Graphical User Interface:
+You can purchase an elegant graphical user interface for managing indiestor native on our website. This is available for a small one off cost, which will help fund the further development of this project.
 
 .SH AUTHOR
 Alex Gardiner (alex@indiestor.com) & Erik Poupaert (erik@indiestor.com)
