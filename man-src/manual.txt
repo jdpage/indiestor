@@ -3,7 +3,7 @@
 .\"
 .TH indiestor 1 "APRIL 2014" Linux "User Manuals"
 .SH NAME
-indiestor - an Open Source storage platform for Avid project, bin and media sharing.
+indiestor - an Open Source storage platform for Avid project and media sharing.
 .SH SYNOPSIS
 
 .B indiestor
@@ -34,22 +34,20 @@ indiestor - an Open Source storage platform for Avid project, bin and media shar
 
  --help
 .SH DESCRIPTION
-indiestor is an an Open Source storage platform for Avid collboration. Administartion is performed using a free command line tool. This takes care of both users and groups, as well as the sharing of projects, bins and media. A none-free Graphical User Interface is avaible from our site.
+indiestor is an Open Source storage platform for Avid collboration. Management is performed using a free command line tool. This takes care of both users and groups, as well as the sharing of projects and media. A none-free Graphical User Interface is avaible from our site for a small fee.
 
-The system operates transparently using incron and inotify to watch the file system for 'share triggers' (see below). There is very little for the editor to learn and nothing custom to install on each workstation.
+The system using incron and inotify to watch the file system for 'share triggers' (see below). There is very little for the editor to learn and nothing to install on each workstation.
 
-Be aware that indiestor does not attempt to eumulate AECIFS or Avid style bin locking. Instead it is a home centric storage solution where each editor is provided with their own network drive.
+Be aware that indiestor does not attempt to emulate AECIFS or Avid style bin locking. Instead it is a home centric storage solution where each editor is provided with their own network drive.
 
-B.
-OS Compatibility:
-
-Debian Wheezy (Recommended)
-Debian Squeeze
-Ubuntu Precise
+.B OS COMPATIBILITY:
+Debian Wheezy (Recommended),
+Debian Squeeze,
+Ubuntu Precise,
 Ubuntu Raring
 
 .B SHARING PROJECTS:
-To share a project the leading editor must: a) be in a group with his/her co-editors b) name a new or existing project with the following 'share trigger':
+To share a project the leading editor must: a) be in a group with his/her co-editors b) name a new or existing project with the with appropriate 'share trigger'.
 
 For avid shared projects use:
 .B
@@ -60,18 +58,18 @@ For folders containing AMA volumes, legacy style FCP projects or anything else u
  <foldername>.shared
 
 .B NB:
-indiestor only listens to share triggers on the top level each user home. It will no trigger from inside sub-folders.
+indiestor only listens to share triggers on the top level each user home. 
 
 Upon the detection of each
 .B .avid
-trigger indiestor automatically creates and distributes a
+trigger indiestor automatically creates and distributes 
 .B .copy
-versions of the project. The .copy projects can be found in each group memebers “Avid Shared Projects” sub-folder.
+versions of the project. The .copy projects can be found in each group memebers “Avid Shared Projects” folder.
 
-Inside each node of the shared project you will find the 'sharing tree' - a network of folders that allows bins to be offered read-only to the group. An Unprotected folder is provided for conveniently exchanging bins.
+Inside each node of the shared project you will find the 'sharing tree'. The sharing tree is a network of folders that allows bins to be offered read-only to the group. An Unprotected folder is provided for conveniently exchanging bins between editors.
 
 .B SHARING MXF MEDIA:
-Media sharing between group members is enabled automatically as soon as media exists in /<user>/Avid MediaFiles/MXF. As an aside, it is quite possible to use indiestor as a cheap way of expanding the media storage capacity of an exsiting network.
+Media sharing is enabled automatically as soon as media exists in /<user>/Avid MediaFiles/MXF. As an aside, it is quite possible to use indiestor as a cheap way to expand the media storage capacity of an exsiting network.
 
 .B ONE GROUP LIMITATION:
 At present users can only be a member of one group at a time. However, we aim to raise enough funding through sales of our GUI to implement multiple group membership and extended ZFS features.
@@ -342,10 +340,10 @@ Users should switch to Finder and use Command + K or click Go > connect to serve
 
 afp://<IP-ADDRESS-or-HOST-NAME>/
 
-Mac users will periodically see the “project settings not saved due to an error”. While this can be annoying, it is largely cosemtic and only effects the .avp file. It does not effect .avb or .avs files. We recommend AFP over samba for Mac clients because it performs incredibly well. Users that wish to use Samba on Mac will need the Thursby Dave samba client. To enable samba for Mac simply uncomment the “indiestor-mac” share in /etc/samba/smb.conf
+Mac users will periodically see the “project settings not saved due to an error”. While this can be annoying, it is largely cosemtic and only effects the .avp file. It does not effect .avb or .avs files. We recommend AFP over samba for Mac clients because of its superior performance. Users that wish to use Samba on Mac will need the Thursby Dave samba client. To enable samba for Mac you will need to uncomment the “indiestor-mac” share in /etc/samba/smb.conf.
 
 .B Connecting Windows clients to indiestor:
-For windows use the built in CIFS/SMB client. Right click on "Computer" then choose Map Network Drive.
+Right click on "Computer" then choose "Map Network Drive".
 
 All users in a group should agree to map mounts to the same drive letter using the following folder path:
 
@@ -353,7 +351,7 @@ All users in a group should agree to map mounts to the same drive letter using t
 
 The 'Connect using different credentials' is handy if windows signs you in automatically.
 
-NB: Windows users must to disable UAC before attempting to use NAS drives with Avid.
+NB: Windows users must to disable UAC.
 
 .B Enable Avid "All Drives":
 this option must be enabled as it allows Avid to use third party network shares. You can enable it by going into the Avid "Tools" menu, choosing the "Console" option then and typing "alldrives 1".
@@ -361,17 +359,15 @@ this option must be enabled as it allows Avid to use third party network shares.
 Hit enter and the console should respond with:
  "All drives will be viewed as media drives"
 
-This only has to be set once on each workstation.
-
 .B FURTHER DIAGNOSTIC INFORMATION:
-Further diagnostic information can be found on the Technical FAQs page at: http://www.indiestor.com/documentation/getting-started/admin-faq
+Further diagnostic information can be found on our Technical FAQs page at: http://www.indiestor.com/documentation/getting-started/admin-faq
 
 .B SUPPORT:
-Indiestor native support requests should be directed to our google group at:
+Please direct indiestor native support requests to our google community at:
 https://groups.google.com/forum/#!forum/indiestor
 
 .B Indiestor GUI:
-You can purchase an elegant graphical user interface for managing indiestor native on our website. This is available for a small one off cost, which will help fund the further development of this project. GUI includes one year limited email support.
+You can purchase an elegant graphical user interface for managing indiestor native from our website. This is available for a small fee, which will help fund the further development of this project. GUI includes one year limited email support. Additional years support can be purchased as required.
 
 .SH AUTHOR
 Alex Gardiner (alex@indiestor.com) & Erik Poupaert (erik@indiestor.com)
