@@ -34,11 +34,22 @@ indiestor - an Open Source storage platform for Avid project, bin and media shar
 
  --help
 .SH DESCRIPTION
-indiestor native is an an Open Source storage platform for Avid collboration. It consists of a completely free command line tool, which takes care of the management of both groups and users, as well as the sharing of projects, bins and media. Incron and inotify are used to transparantly trigger sharing, so there is very little for the editor to learn. Be aware that indiestor does not attempt to eumulate AECIFS or Avid style bin locking. Instead it is a home centric storage solution where each editor has his/her own network home.
+indiestor is an an Open Source storage platform for Avid collboration. Administartion is performed using a free command line tool. This takes care of both users and groups, as well as the sharing of projects, bins and media. A none-free Graphical User Interface is avaible from our site.
 
+The system operates transparently using incron and inotify to watch the file system for 'share triggers' (see below). There is very little for the editor to learn and nothing custom to install on each workstation.
+
+Be aware that indiestor does not attempt to eumulate AECIFS or Avid style bin locking. Instead it is a home centric storage solution where each editor is provided with their own network drive.
+
+B.
+OS Compatibility:
+
+Debian Wheezy (Recommended)
+Debian Squeeze
+Ubuntu Precise
+Ubuntu Raring
 
 .B SHARING PROJECTS:
-To share a project an editor must a) be in a group with his co-editors b) simply name a new or existing project as follows:
+To share a project the leading editor must: a) be in a group with his/her co-editors b) name a new or existing project with the following 'share trigger':
 
 For avid shared projects use:
 .B
@@ -49,24 +60,30 @@ For folders containing AMA volumes, legacy style FCP projects or anything else u
  <foldername>.shared
 
 .B NB:
-indiestor only listens to share triggers on the top level of the users home directory.
+indiestor only listens to share triggers on the top level each user home. It will no trigger from inside sub-folders.
 
-In the case of avid shares, the
+Upon the detection of each
 .B .avid
-trigger prompts indiestor to automatically create and distribute a
+trigger indiestor automatically creates and distributes a
 .B .copy
-version of the project to each member of the group. The .copy project can be found in the “Avid Shared Projects” sub-folder.
+versions of the project. The .copy projects can be found in each group memebers “Avid Shared Projects” sub-folder.
 
-Inside each node of the shared project you will find the 'sharing tree' - a network of folders, which are offered read-only to group members. An Unprotected folder is provided for conveniently exchanging bins. Of course this is very different scenario to the Avid Unity/ISIS environment. However, it is a powerful tool that provides some great features for practically zero cost.
+Inside each node of the shared project you will find the 'sharing tree' - a network of folders that allows bins to be offered read-only to the group. An Unprotected folder is provided for conveniently exchanging bins.
 
-.B SHARING MEDIA:
-Media sharing between the group is automatically enabled as soon as media exists in /Avid MediaFiles/MXF. As an aside, it is quite possible to use indiestor as a cheap way of expanding an exsiting ethernet based storage solution.
+.B SHARING MXF MEDIA:
+Media sharing between group members is enabled automatically as soon as media exists in /<user>/Avid MediaFiles/MXF. As an aside, it is quite possible to use indiestor as a cheap way of expanding the media storage capacity of an exsiting network.
 
 .B ONE GROUP LIMITATION:
-At present users can only be a member of one group at a time. However, we aim to raise enough funding through sales of our GUI to implement multiple group membership and extended ZFS features. Our feature roadmap is available here: http://indiestor.com/indiestor-roadmap-2014-2015
+At present users can only be a member of one group at a time. However, we aim to raise enough funding through sales of our GUI to implement multiple group membership and extended ZFS features.
+
+Our feature roadmap is available here: http://indiestor.com/indiestor-roadmap-2014-2015
 
 .B UNSHARING:
-The project owner can unshare a project by simply removing the share trigger. For example, by renaming the project folder “episode3.avid" to “episode”3, the project owner will have removed the ".avid" trigger. This will cause indiestor to automatically unshare the project and archive each members work from /shared/<user>.
+The leading editor (.avid owner) can unshare at any time by simply removing the share trigger. For example, by renaming the project folder “episode3.avid" to “episode”3 indiestor will automatically unshare the project. As part of this process work completed by each editor in /shared/<user> will be archived into the lead project.
+
+.B MORE DETAILS:
+For more details on the inner workings of indiestor, please view this document:
+http://indiestor.com/images/indiestor%20architecture%20notes.pdf
 .SH OPTIONS
 There are six main entities through which the command line operates:
 
@@ -264,9 +281,9 @@ For example:
 
 .B indiestor --user john -add -set-group grp1 -passwd hello
 
-The command above adds “john” to the system, make him a memeber of the group "grp1" and sets his password to "hello". By default, the system will create john's home folder in
+The command above adds “john” to the system, makes him a memeber of the group "grp1" and sets his password to "hello". By default, the system will create john's home folder in
 .B /home/john
-. You can override this default by using the -set-home <arg> option. If the target volume is a ZFS storage pool indiestor will create an individual ZFS dataset for each user. For now we only recommend using ZFS storage with windows clients.
+. You can override this default by using the -set-home <arg> option. If the target volume is a ZFS storage pool indiestor will create an individual ZFS dataset for the user. For now we only recommend using ZFS storage with windows clients.
 
 .SH FILES
 .I /etc/passwd
@@ -349,8 +366,12 @@ This only has to be set once on each workstation.
 .B FURTHER DIAGNOSTIC INFORMATION:
 Further diagnostic information can be found on the Technical FAQs page at: http://www.indiestor.com/documentation/getting-started/admin-faq
 
+.B SUPPORT:
+Indiestor native support requests should be directed to our google group at:
+https://groups.google.com/forum/#!forum/indiestor
+
 .B Indiestor GUI:
-You can purchase an elegant graphical user interface for managing indiestor native on our website. This is available for a small one off cost, which will help fund the further development of this project.
+You can purchase an elegant graphical user interface for managing indiestor native on our website. This is available for a small one off cost, which will help fund the further development of this project. GUI includes one year limited email support.
 
 .SH AUTHOR
 Alex Gardiner (alex@indiestor.com) & Erik Poupaert (erik@indiestor.com)
