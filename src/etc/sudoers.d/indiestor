@@ -1,0 +1,1 @@
+%indiewheel ALL=(ALL) NOPASSWD: /usr/share/indiestor-core/prg/indiestor.php, /usr/share/indiestor-core/prg/indiestor-inotify.php, /usr/share/indiestor-gui-core/indiestor-auth

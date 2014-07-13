@@ -4,13 +4,12 @@
 # Concept, requirements, specifications, and unit testing
 # By Alex Gardiner, alex@indiestor.com
 # Written by Erik Poupaert, erik@sankuru.biz
-# Commissioned at peopleperhour.com 
+# Commissioned at peopleperhour.com
 # Licensed under the GPL
 #------------------------------------------------------------
 PATH=/bin:/sbin:/usr/bin:/usr/sbin
 export PATH
 
 if [  "$(pgrep -f '/usr/bin/php /usr/share/indiestor-core/prg/indiestor-inotify.php')" = "" ] ; then
-	super indiestor-inotify
+	sudo /usr/share/indiestor-core/prg/indiestor-inotify.php
 fi
-
